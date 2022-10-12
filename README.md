@@ -1,11 +1,11 @@
 # File Management Toolkit
 
-Useful tools related to files.
+Useful tools related to files, mainly for personal usage.
 
 List:
 - Code Counters
 - Old File Mover
-- 
+- Duplicate File Detector
 
 ## Code Counters
 
@@ -32,3 +32,12 @@ Moves old files to the target folder.
 python old_file_mover.py [-h] <source_folder> <target_folder>
 ```
 
+## Duplicate File Detector
+
+Check duplicate files by comparing md5 and output reports to `data\duplicate_index\record.json`
+
+### Usage
+
+```shell
+python duplicate_file_detector.py [-h] <source_folder>
+```

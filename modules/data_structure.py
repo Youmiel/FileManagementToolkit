@@ -1,4 +1,5 @@
 import json
+from textwrap import indent
 from threading import RLock
 from typing import Dict, List, Union
 
@@ -40,9 +41,10 @@ class MultiValueHashMap():
         with self.lock as lo:
             self.internal_map.clear()
 
-    def to_json(self) -> str:
+    def to_json(self, pretty: bool = False) -> str:
+        indent = 4 if pretty else None
         with self.lock as lo:
-            return json.dumps(self.internal_map, default=lambda x: x.__dict__())
+            return json.dumps(self.internal_map, default=lambda x: x.__dict__(), indent=indent)
 
     def from_json(json_string: str) -> 'MultiValueHashMap':
         m = json.loads(json_string)

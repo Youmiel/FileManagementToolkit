@@ -46,6 +46,7 @@ def write_json(path: str, val: Dict) -> None:
 
 from supported_language import LangRegistry, LangType
 
+
 def run(path: str, lang: LangType) -> None:
     lang_config = LangRegistry.get(lang)
     path_list = scan_folder(path, file_ext=lang_config['file_ext'])

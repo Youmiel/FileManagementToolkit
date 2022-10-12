@@ -1,17 +1,17 @@
-
-
-from concurrent.futures import ThreadPoolExecutor, thread
-from encodings import utf_8
-from hashlib import md5
-from numbers import Integral
-from operator import truediv
+from argparse import ArgumentParser, Namespace
 import sys
+from concurrent.futures import ThreadPoolExecutor
+from hashlib import md5
 from time import sleep
-from traceback import print_exception
-from modules.data_structure import MultiValueHashMap
+from typing import List
 
+from modules.data_structure import MultiValueHashMap
 from modules.util import check_and_write_file, print_progress_bar, scan_folder
 
+## config
+MAX_THREAD = 80
+PRETTY = False
+RECHECK_TIME = 0.05
 
 def insert_md5(path: str, map: MultiValueHashMap) -> None:
     with open(path, 'br') as bin_file:
@@ -19,21 +19,26 @@ def insert_md5(path: str, map: MultiValueHashMap) -> None:
         md5_str = m.hexdigest()
         map.add(md5_str, path)
 
-if __name__ == '__main__':
-    MAX_THREAD = 80
+def parse_args(args: List[str]) -> Namespace:
+    parser = ArgumentParser(description='Check duplicate files by comparing md5 and output reports.', add_help=True)
 
-    print(sys.argv)
-    if len(sys.argv) < 2 or sys.argv[1] == '-h':
-        print('usage: [program.py] <source_folder>')
+    parser.add_argument('source_folder', action='store', type=str)
+
+    if len(args) == 0:
+        parser.print_usage()
         sys.exit(0)
+    return parser.parse_args(args)
 
-    source_dir = sys.argv[1]
+if __name__ == '__main__':
+    config = parse_args(sys.argv[1:])
+
+    source_dir = config.source_folder
 
     path_list = scan_folder(source_dir, log=False)
     
     print('Directory scan finished.' + '({} files)'.format(len(path_list)))
 
-    print('processing for duplicate...', end='', flush=True)
+    print('Processing for duplicate files...')
     back_length = 0
     record = MultiValueHashMap()
     thread_queue = []
@@ -43,7 +48,7 @@ if __name__ == '__main__':
                 for i in range(len(thread_queue) - 1, -1, -1):
                     if not thread_queue[i].running():
                         thread_queue.pop(i)
-                sleep(0.05)
+                sleep(RECHECK_TIME)
             fu = pool.submit(insert_md5, path_list[index], record)
             thread_queue.append(fu)
 
@@ -53,7 +58,7 @@ if __name__ == '__main__':
             for i in range(len(thread_queue) - 1, -1, -1):
                 if not thread_queue[i].running():
                     thread_queue.pop(i)
-            sleep(0.05)
+            sleep(RECHECK_TIME)
     
     key_set = {}
     for key in record.internal_map.keys():
@@ -63,5 +68,7 @@ if __name__ == '__main__':
     for k in key_set:
         record.internal_map.pop(k)
 
-    # print()
-    check_and_write_file('data\\record.json', record.to_json())
+    print()
+    print('Saving duplicate records...')
+    
+    check_and_write_file('data\\duplicate_index\\record.json', record.to_json(pretty=PRETTY))

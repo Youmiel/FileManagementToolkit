@@ -1,3 +1,4 @@
+from argparse import ArgumentParser, Namespace
 import os
 import sys
 import time
@@ -8,17 +9,31 @@ from modules.util import scan_folder
 
 A_YEAR_TIME = 365 * 24 * 60 * 60
 
+# config
 MAX_DURATION = A_YEAR_TIME * 1
 
-if __name__ == '__main__':
-    print(sys.argv)
-    if len(sys.argv) < 3 or sys.argv[1] == '-h':
-        print('usage: [program.py] <source_folder> <target_folder>')
 
-    source_dir, target_dir = sys.argv[1], sys.argv[2]
+def parse_args(args: List[str]) -> Namespace:
+    parser = ArgumentParser(
+        description='Moves old files to the target folder.', add_help=True)
+
+    parser.add_argument('source_folder', action='store', type=str)
+    parser.add_argument('target_folder', action='store', type=str)
+
+    if len(args) == 0:
+        parser.print_usage()
+        sys.exit(0)
+    return parser.parse_args(args)
+
+
+if __name__ == '__main__':
+    config = parse_args(sys.argv[1:])
+
+    source_dir, target_dir = config.source_folder, config.target_folder
+    
     for i in range(5):
         if not os.path.exists(target_dir):
-            os.makedirs(source_dir,exist_ok=True)
+            os.makedirs(source_dir, exist_ok=True)
             break
         elif os.path.isfile(target_dir):
             source_dir = source_dir + '_copy'

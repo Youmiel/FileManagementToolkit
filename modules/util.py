@@ -1,5 +1,3 @@
-from math import floor
-from operator import truediv
 import os
 import re
 import sys
@@ -57,19 +55,44 @@ def print_progress_bar(current_value, max_value, bar_length: int = 10, back_leng
     return len(print_string)
 
 
-def check_and_write_file(path: str, content: Union[str, bytes], overwrite: bool = False):
+def get_new_name(original_path, index, is_directory: bool = False) -> str:
+    if not is_directory:
+        root, ext = os.path.splitext(original_path)
+        return root + '_{}'.format(index) + ext
+    else:
+        return original_path + '_{}'.format(index)
+
+
+def check_before_create(path: str, is_directory: bool = False, overwrite: bool = False) -> str:
     actual_path = path
     if os.path.exists(path):
-        if overwrite and os.path.isfile(path):
-            pass
+        rename = 1
+        if overwrite:
+            while True:
+                if is_directory and os.path.isdir(actual_path):
+                    break
+                elif not is_directory and os.path.isfile(actual_path):
+                    break
+                else:
+                    actual_path = get_new_name(path, rename, is_directory)
+                    rename += 1
+            return actual_path
         else:
-            root, ext = os.path.splitext(path)
-            rename = 1
-            while(os.path.exists(actual_path)):
-                actual_path = root + '_{}'.format(rename) + ext
+            while os.path.exists(actual_path):
+                actual_path = get_new_name(path, rename, is_directory)
                 rename += 1
+            return actual_path
     else:
-        os.makedirs(os.path.dirname(path), exist_ok=True)
+        if is_directory:
+            mkdir_name = path
+        else:
+            mkdir_name = os.path.dirname(path)
+        os.makedirs(mkdir_name, exist_ok=True)
+        return path
+
+
+def check_and_write_file(path: str, content: Union[str, bytes], overwrite: bool = False):
+    actual_path = check_before_create(path, False, overwrite)
 
     if type(content) is bytes:
         with open(actual_path, 'bw') as bin_file:
