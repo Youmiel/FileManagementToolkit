@@ -6,6 +6,7 @@ List:
 - Code Counters
 - Old File Mover
 - Duplicate File Detector
+- Duplicate File Size Calculator
 
 ## Code Counters
 
@@ -34,10 +35,20 @@ python old_file_mover.py [-h] <source_folder> <target_folder>
 
 ## Duplicate File Detector
 
-Check duplicate files by comparing md5 and output reports to `data\duplicate_index\record.json`
+Checks duplicate files by comparing md5 and output reports to `data\duplicate_index\record.json`
 
 ### Usage
 
 ```shell
 python duplicate_file_detector.py [-h] <source_folder>
+```
+
+## Duplicate File Size Calculator
+
+Calculates duplicate file size and output optional reports to `data\size_index.json`
+
+### Usage
+
+```shell
+python duplicate_file_size.py [-h] [--report] <index_file>
 ```

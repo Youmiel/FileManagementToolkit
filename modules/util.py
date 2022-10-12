@@ -1,6 +1,7 @@
 import os
 import re
 import sys
+import time
 from typing import Any, Callable, Union
 
 
@@ -45,11 +46,14 @@ def scan_folder(path: str, max_recursion: int = 15, file_ext='.*', file_regex: s
     return result
 
 
-def print_progress_bar(current_value, max_value, bar_length: int = 10, back_length: int = 0):
+def print_progress_bar(current_value, max_value, start_time, bar_length: int = 10, back_length: int = 0):
+    progress = current_value / max_value
+    estimate_time = (time.time() - start_time) / progress * (1 - progress) if progress > 0 else -60
+    bar_count = round(progress * bar_length)
+
+    print_string = "({} / {}) {} [{:.1f} % / 100 %] (eta {:.1f} min)".format(
+        current_value, max_value, '|' * bar_count + '-' * (bar_length - bar_count), current_value / max_value * 100, estimate_time / 60)
     print('\b' * back_length, end='', flush=True)
-    bar_count = round(current_value / max_value * bar_length)
-    print_string = "({} / {}) {} ({:.1f} % / 100 %)".format(
-        current_value, max_value, '|' * bar_count + '-' * (bar_length - bar_count), current_value / max_value * 100)
     print(print_string, end='', flush=True)
 
     return len(print_string)

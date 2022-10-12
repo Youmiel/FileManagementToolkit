@@ -44,7 +44,7 @@ class MultiValueHashMap():
     def to_json(self, pretty: bool = False) -> str:
         indent = 4 if pretty else None
         with self.lock as lo:
-            return json.dumps(self.internal_map, default=lambda x: x.__dict__(), indent=indent)
+            return json.dumps(self.internal_map, default=lambda x: x.__dict__, indent=indent)
 
     def from_json(json_string: str) -> 'MultiValueHashMap':
         m = json.loads(json_string)
