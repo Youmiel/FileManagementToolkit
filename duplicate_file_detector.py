@@ -9,13 +9,14 @@ import time
 from typing import List
 
 from modules.data_structure import MultiValueHashMap
+from modules.thread_util import wait_and_check_queue
 from modules.util import check_and_write_file, print_progress_bar, scan_folder
 
 # config
 MAX_THREAD = 80
 PRETTY = False
 RECHECK_TIME = 0.05
-TEMP_FILE = 'data\\temp'
+TEMP_FILE = 'data/temp'
 
 
 def insert_md5(path: str, map: MultiValueHashMap) -> None:
@@ -61,27 +62,20 @@ if __name__ == '__main__':
             sys.exit(0)
 
     print('Processing for duplicate files...')
-    back_length, start_time = 0, time.time()
     record = MultiValueHashMap()
     thread_queue = []
+    back_length, start_time = 0, time.time()
     with ThreadPoolExecutor(max_workers=MAX_THREAD) as pool:
         for index in range(len(path_list)):
-            while(len(thread_queue) >= MAX_THREAD):
-                for i in range(len(thread_queue) - 1, -1, -1):
-                    if thread_queue[i].done():
-                        thread_queue.pop(i)
-                time.sleep(RECHECK_TIME)
+            wait_and_check_queue(thread_queue, MAX_THREAD, RECHECK_TIME)
+
             fu = pool.submit(insert_md5, path_list[index], record)
             thread_queue.append(fu)
 
             back_length = print_progress_bar(
                 index, len(path_list), start_time, 20, back_length)
 
-        while(len(thread_queue) > 0):
-            for i in range(len(thread_queue) - 1, -1, -1):
-                if thread_queue[i].done():
-                    thread_queue.pop(i)
-            time.sleep(RECHECK_TIME)
+        wait_and_check_queue(thread_queue, 1, RECHECK_TIME)
 
     key_set = {}
     for key in record.internal_map.keys():

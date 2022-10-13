@@ -16,7 +16,7 @@ SIZE_UNITS = ['B', 'KB', 'MB', 'GB', 'TB']
 MAX_THREAD = 80
 PRETTY = False
 RECHECK_TIME = 0.05
-REPORT_FILE = 'data\\size_index.json'
+REPORT_FILE = 'data/size_index.json'
 
 
 def get_file_size(path: str, size_map: Dict[str, int]) -> None:
@@ -45,9 +45,11 @@ if __name__ == '__main__':
     with open(index_file, 'r') as f:
         index_map = json.load(f)
 
-    back_length, start_time = 0, time.time()
+    print('File index loaded')
+
     size_map = {}
     thread_queue = []
+    back_length, start_time = 0, time.time()
     with ThreadPoolExecutor(max_workers=MAX_THREAD) as pool:
         count = 0
         for key in index_map:

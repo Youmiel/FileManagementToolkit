@@ -43,7 +43,7 @@ if __name__ == '__main__':
 
     for path in file_list:
         if current_time - os.path.getmtime(path) > MAX_DURATION:
-            folders = path.replace(source_dir, '').removeprefix('\\')
+            folders = path.replace(source_dir, '').removeprefix('\\').removeprefix('/')
             dst = os.path.join(target_dir, folders)
 
             mkd = os.path.dirname(dst)
