@@ -2,7 +2,7 @@ import sys
 from enum import Enum
 from typing import Dict
 
-sys.path.insert(1, 'modules')
+sys.path.insert(1, 'modules/code')
 from class_scanner import LanguageParser
 
 

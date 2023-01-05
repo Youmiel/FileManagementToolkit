@@ -44,25 +44,25 @@ def write_json(path: str, val: Dict) -> None:
     with open(path, 'w', encoding='UTF-8') as f:
         json.dump(val, f, sort_keys=True, indent=4)
 
-from supported_language import LangRegistry, LangType
+# from supported_language import LangRegistry, LangType
 
 
-def run(path: str, lang: LangType) -> None:
-    lang_config = LangRegistry.get(lang)
-    path_list = scan_folder(path, file_ext=lang_config['file_ext'])
-    class_dict: Dict[str, List[str]] = {}
-    for p in path_list:
-        namespace, class_list = count_classes(p, lang_config['parser'])
-        if namespace in class_dict.keys():
-            for c in class_list:
-                class_dict[namespace].append(c)
-        else:
-            class_dict[namespace] = class_list
-    keys = list(class_dict.keys())
-    keys.sort()
-    print(keys)
-    write_json('./class_scan_result.json', class_dict)
+# def run(path: str, lang: LangType) -> None:
+#     lang_config = LangRegistry.get(lang)
+#     path_list = scan_folder(path, file_ext=lang_config['file_ext'])
+#     class_dict: Dict[str, List[str]] = {}
+#     for p in path_list:
+#         namespace, class_list = count_classes(p, lang_config['parser'])
+#         if namespace in class_dict.keys():
+#             for c in class_list:
+#                 class_dict[namespace].append(c)
+#         else:
+#             class_dict[namespace] = class_list
+#     keys = list(class_dict.keys())
+#     keys.sort()
+#     print(keys)
+#     write_json('./class_scan_result.json', class_dict)
 
 
-if __name__ == '__main__':
-    run('./', LangType.C_SHARP)
+# if __name__ == '__main__':
+#     run('./', LangType.C_SHARP)
