@@ -50,7 +50,7 @@ def _line_counter_run(path: str, file_ext: str):
     else:
         ext = '\\.' + file_ext
 
-    path_list = scan_folder(path, file_ext)
+    path_list = scan_folder(path, file_ext=file_ext)
     count = 0
     for p in path_list:
         count += line_counter.count_line(p)
