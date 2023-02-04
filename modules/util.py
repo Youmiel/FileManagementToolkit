@@ -1,3 +1,4 @@
+from io import BufferedReader
 import os
 import re
 import sys
@@ -9,9 +10,8 @@ import chardet
 
 def get_encoding(filename: str) -> str:
     with open(filename, 'rb') as testfile:
-        result = chardet.detect(testfile.readline())
-        encode_type = 'utf-8' if result.get(
-            'encoding') is None else result.get('encoding')
+        result = chardet.detect(testfile.read())
+        encode_type = 'utf-8' if result.get('encoding') is None else result.get('encoding')
     return encode_type
 
 
