@@ -4,28 +4,27 @@ import sys
 import time
 from typing import Any, Callable, Union
 
+import chardet
+
+
+def get_encoding(filename: str) -> str:
+    with open(filename, 'rb') as testfile:
+        result = chardet.detect(testfile.readline())
+        encode_type = 'utf-8' if result.get(
+            'encoding') is None else result.get('encoding')
+    return encode_type
+
 
 def file_operation(path: str, mode: str, function: Callable) -> Any:
+    encode_type = get_encoding(path)
     flags = [False]
     try:
-        with open(path, mode, encoding="utf-8") as f:
+        with open(path, mode, encoding=encode_type) as f:
             ret_val = function(f, flags)
     except Exception as e:
         print(path, e, file=sys.stderr)
 
-    if flags[0]:
-        return ret_val
-    else:
-        try:
-            with open(path, mode, encoding="gbk") as f:
-                ret_val = function(f, flags)
-        except Exception as e:
-            print(path, e, file=sys.stderr)
-    if flags[0]:
-        return ret_val
-    else:
-        return None
-
+    return ret_val
 
 def scan_folder(path: str, max_recursion: int = 15, file_ext='.*', file_regex: str = '.*', log: bool = True) -> list[str]:
     pattern_ext = re.compile(file_ext)
@@ -48,7 +47,8 @@ def scan_folder(path: str, max_recursion: int = 15, file_ext='.*', file_regex: s
 
 def print_progress_bar(current_value, max_value, start_time, bar_length: int = 10, back_length: int = 0):
     progress = current_value / max_value
-    estimate_time = (time.time() - start_time) / progress * (1 - progress) if progress > 0 else -60
+    estimate_time = (time.time() - start_time) / progress * \
+        (1 - progress) if progress > 0 else -60
     bar_count = round(progress * bar_length)
 
     print_string = "({} / {}) {} [{:.1f} % / 100 %] (eta {:.1f} min)".format(
