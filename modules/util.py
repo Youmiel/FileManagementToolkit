@@ -2,7 +2,7 @@ import os
 import re
 import sys
 import time
-from typing import Any, Callable, Union
+from typing import IO, Any, Callable, List, Union
 
 import chardet
 
@@ -13,8 +13,7 @@ def get_encoding(filename: str) -> str:
         encode_type = 'utf-8' if result.get('encoding') is None else result.get('encoding')
     return encode_type
 
-
-def file_operation(path: str, mode: str, function: Callable) -> Any:
+def file_operation(path: str, mode: str, function: Callable[[IO, List[bool]], Any]) -> Any:
     encode_type = get_encoding(path)
     flags = [False]
     try:
