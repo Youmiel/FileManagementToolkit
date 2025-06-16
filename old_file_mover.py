@@ -10,7 +10,7 @@ from modules.util import scan_folder
 A_YEAR_TIME = 365 * 24 * 60 * 60
 
 # config
-MAX_DURATION = A_YEAR_TIME * 1
+MAX_DURATION = A_YEAR_TIME * 2
 
 
 def parse_args(args: List[str]) -> Namespace:
@@ -32,11 +32,12 @@ if __name__ == '__main__':
     source_dir, target_dir = config.source_folder, config.target_folder
     
     for i in range(5):
+        target_dir_backup = target_dir
         if not os.path.exists(target_dir):
-            os.makedirs(source_dir, exist_ok=True)
+            os.makedirs(target_dir, exist_ok=True)
             break
         elif os.path.isfile(target_dir):
-            source_dir = source_dir + '_copy'
+            target_dir = f'{target_dir_backup}_{i}'
     file_list = scan_folder(source_dir)
     # print(file_list)
     current_time = time.time()
